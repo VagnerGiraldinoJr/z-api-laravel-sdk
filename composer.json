@@ -1,7 +1,20 @@
 {
-    "name": "seu-usuario-github/z-api-laravel-sdk",
-    "description": "SDK Profissional para integração Z-API no Laravel",
+    "name": "vagner-giraldino/z-api-laravel-sdk",
+    "description": "SDK Profissional para integração Z-API no Laravel com foco em remarketing e botões.",
     "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vagner Giraldino",
+            "email": "vgiraldino@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^9.0|^10.0|^11.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
     "autoload": {
         "psr-4": {
             "SuaEmpresa\\ZApi\\": "src/"
@@ -11,11 +24,12 @@
         "laravel": {
             "providers": [
                 "SuaEmpresa\\ZApi\\ZApiServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "ZApi": "SuaEmpresa\\ZApi\\Facades\\ZApi"
+            }
         }
     },
-    "require": {
-        "php": "^8.0",
-        "illuminate/support": "^9.0|^10.0|^11.0"
-    }
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
