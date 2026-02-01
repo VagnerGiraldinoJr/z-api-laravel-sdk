@@ -37,9 +37,11 @@ it('sends buttons with correct JSON payload to Z-API using Button DTOs', functio
             && $request['message'] === $text
             && $buttonActions[0]['id'] === 'btn-1'
             && $buttonActions[0]['type'] === 'URL'
+            && $buttonActions[0]['label'] === 'Ver Oferta'
             && $buttonActions[0]['url'] === 'https://example.com/offer'
             && $buttonActions[1]['id'] === 'btn-2'
             && $buttonActions[1]['type'] === 'CALL'
+            && $buttonActions[1]['label'] === 'Ligar'
             && $buttonActions[1]['phone'] === '551133334444';
     });
 

@@ -93,8 +93,8 @@ Testes abrangentes para o método `sendButtons` da classe `ZClient`:
 
 ## 📦 Dependências de Teste
 
-- **Pest PHP** (^4.3): Framework de testes moderno para PHP
-- **Orchestra Testbench** (^9.16): Ferramenta para testar pacotes Laravel
+- **Pest PHP** (^2.0): Framework de testes moderno para PHP
+- **Orchestra Testbench** (^8.0|^9.0): Ferramenta para testar pacotes Laravel
 - **Laravel Http Fake**: Simulação de requisições HTTP
 
 ## 🎯 Mocking da API

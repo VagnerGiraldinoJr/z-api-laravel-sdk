@@ -19,7 +19,7 @@ class ZApiServiceProvider extends ServiceProvider
     /**
      * Registra serviços no container do Laravel
      * 
-     * Este método é chamado automaticamente durante o boot do framework.
+     * Este método é chamado automaticamente durante a fase de registro do framework.
      * Registra o ZClient para que uma nova instância seja criada a cada resolução,
      * evitando problemas de estado compartilhado em ambientes multi-tenant.
      * 

@@ -171,6 +171,33 @@ ZApi::using($instance, $token, $clientToken)
 - ✅ Valores zero ou negativos são ignorados
 - 🎯 Usa o parâmetro `delayMessage` da Z-API
 
+### 🏢 Multi-Tenancy
+
+O SDK está preparado para ambientes multi-tenant. Cada chamada a `using()` configura as credenciais dinamicamente:
+
+```php
+// Tenant 1
+ZApi::using($tenant1->instance, $tenant1->token, $tenant1->clientToken)
+    ->sendButtons(...);
+
+// Tenant 2 - usa credenciais diferentes
+ZApi::using($tenant2->instance, $tenant2->token, $tenant2->clientToken)
+    ->sendButtons(...);
+```
+
+**⚠️ Nota sobre Facades:** Embora o ZClient seja registrado com `bind()` (não singleton) no service provider, facades do Laravel mantêm cache da instância resolvida durante uma requisição. Para isolamento completo em cenários multi-tenant complexos dentro da mesma requisição, considere usar injeção de dependência diretamente:
+
+```php
+use SuaEmpresa\ZApi\Services\ZClient;
+
+// Injeção de dependência garante nova instância
+public function sendMessage(ZClient $client)
+{
+    $client->using($tenant->instance, $tenant->token, $tenant->clientToken)
+           ->sendButtons(...);
+}
+```
+
 ---
 
 ## 🎯 Button DTO
@@ -244,7 +271,7 @@ Os testes cobrem:
 - ✓ Configuração dinâmica de instância/token
 - ✓ Cenários de migração (mix de DTOs e arrays)
 
-**Total: 26 testes, 57 assertions - Todos passando! ✅**
+**Total: 30 testes, 65 assertions - Todos passando! ✅**
 
 Para mais detalhes, consulte [tests/README.md](tests/README.md).
 
