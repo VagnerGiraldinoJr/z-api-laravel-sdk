@@ -6,40 +6,68 @@ Este diretório contém a suite de testes completa para o pacote Z-API Laravel S
 
 ### Testes Unitários
 
+#### `ButtonTest.php`
+
+Testes para o **Button DTO** com validações:
+
+1. **Factory Methods**
+   - Testa `Button::url()` para criar botões de URL
+   - Testa `Button::call()` para criar botões de chamada
+
+2. **Conversão para Array**
+   - Verifica serialização correta de botões URL
+   - Verifica serialização correta de botões CALL
+
+3. **Validações**
+   - Rejeita tipos de botão inválidos
+   - Rejeita botão URL sem parâmetro `url`
+   - Rejeita botão CALL sem parâmetro `phone`
+
+4. **Constructor Direto**
+   - Permite criação via construtor para casos avançados
+
 #### `ZClientTest.php`
 
 Testes abrangentes para o método `sendButtons` da classe `ZClient`:
 
-1. **Teste de Payload JSON Correto**
-   - Verifica se o método envia o JSON correto para a Z-API
+1. **Teste de Payload JSON Correto com DTOs**
+   - Verifica se o método envia o JSON correto usando Button DTOs
    - Valida headers (Client-Token)
    - Confirma que phone, message e buttonActions estão corretos
 
-2. **Teste de Resposta de Sucesso (200)**
+2. **Backward Compatibility**
+   - Garante que arrays simples ainda funcionam
+   - Permite migração gradual para DTOs
+
+3. **Teste de Resposta de Sucesso (200)**
    - Simula uma resposta bem-sucedida da API
    - Verifica status 200 e dados de resposta
 
-3. **Teste de Erro 404**
+4. **Teste de Erro 404**
    - Simula erro de "Instance not found"
    - Confirma que o service detecta corretamente o erro 404
    - Valida as propriedades `failed()` e `clientError()`
 
-4. **Teste de Erro 500**
+5. **Teste de Erro 500**
    - Simula erro interno do servidor
    - Verifica que o service identifica erro 500
    - Valida as propriedades `failed()` e `serverError()`
 
-5. **Teste de URL Dinâmica**
+6. **Teste de URL Dinâmica**
    - Confirma que instância e token são corretamente inseridos na URL
    - Verifica Client-Token customizado
 
-6. **Teste de Botão tipo URL**
-   - Valida estrutura correta para botões de URL
+7. **Teste de Botão tipo URL com DTO**
+   - Valida estrutura correta para botões de URL usando DTOs
    - Confirma id, type, url e label
 
-7. **Teste de Botão tipo CALL**
-   - Valida estrutura correta para botões de chamada
+8. **Teste de Botão tipo CALL com DTO**
+   - Valida estrutura correta para botões de chamada usando DTOs
    - Confirma id, type, phone e label
+
+9. **Teste de Migração**
+   - Permite misturar DTOs e arrays no mesmo envio
+   - Facilita migração gradual
 
 ## 🚀 Executando os Testes
 
@@ -85,7 +113,35 @@ Cada teste segue o padrão:
 2. **Act**: Execução do método testado
 3. **Assert**: Verificação dos resultados
 
-### Exemplo de Teste
+### Exemplo de Teste com Button DTO
+
+```php
+it('sends buttons with correct JSON payload to Z-API using Button DTOs', function () {
+    // Arrange
+    Http::fake([
+        '*' => Http::response(['success' => true, 'messageId' => 'ABC123'], 200)
+    ]);
+
+    $buttons = [
+        Button::url('btn-1', 'Ver Oferta', 'https://example.com/offer'),
+        Button::call('btn-2', 'Ligar', '551133334444'),
+    ];
+
+    // Act
+    $response = $this->client->sendButtons('5511999999999', 'Olá!', $buttons);
+
+    // Assert
+    Http::assertSent(function ($request) {
+        $buttonActions = $request['buttonActions'];
+        return $buttonActions[0]['type'] === 'URL'
+            && $buttonActions[1]['type'] === 'CALL';
+    });
+    
+    expect($response->status())->toBe(200);
+});
+```
+
+### Exemplo de Teste com Arrays (Backward Compatibility)
 
 ```php
 it('handles 404 error response from API', function () {
@@ -114,7 +170,9 @@ it('handles 404 error response from API', function () {
 ## ✅ Cobertura de Testes
 
 Os testes cobrem:
-- ✓ Envio correto de JSON para Z-API
+- ✓ **Button DTO**: Validação, factory methods, serialização
+- ✓ Envio correto de JSON para Z-API com DTOs
+- ✓ Backward compatibility com arrays
 - ✓ Headers corretos (Client-Token)
 - ✓ Tratamento de resposta de sucesso
 - ✓ Tratamento de erro 404
