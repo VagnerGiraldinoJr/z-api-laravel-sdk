@@ -18,31 +18,23 @@ class ZClient
 {
     /**
      * ID da instância Z-API
-     * 
-     * @var string|null
      */
-    protected $instance;
+    protected ?string $instance = null;
 
     /**
      * Token da instância Z-API
-     * 
-     * @var string|null
      */
-    protected $token;
+    protected ?string $token = null;
 
     /**
      * Token do cliente para autenticação
-     * 
-     * @var string|null
      */
-    protected $clientToken;
+    protected ?string $clientToken = null;
 
     /**
      * Delay em segundos para envio da mensagem
-     * 
-     * @var int|null
      */
-    protected $delay = null;
+    protected ?int $delay = null;
 
     /**
      * Configura as credenciais da instância Z-API dinamicamente
@@ -53,7 +45,9 @@ class ZClient
      * @param string $instance ID da instância Z-API
      * @param string $token Token da instância
      * @param string $clientToken Token do cliente para autenticação
-     * @return $this Retorna a própria instância para method chaining
+     * @return self Retorna a própria instância para method chaining
+     * 
+     * @throws \InvalidArgumentException Se algum parâmetro estiver vazio
      * 
      * @example
      * ```php
@@ -64,6 +58,12 @@ class ZClient
      */
     public function using(string $instance, string $token, string $clientToken): self
     {
+        if (empty($instance) || empty($token) || empty($clientToken)) {
+            throw new \InvalidArgumentException(
+                'Instance, token and clientToken cannot be empty'
+            );
+        }
+
         $this->instance = $instance;
         $this->token = $token;
         $this->clientToken = $clientToken;
@@ -77,7 +77,7 @@ class ZClient
      * o envio da mensagem após um determinado número de segundos.
      * 
      * @param int $seconds Número de segundos para atrasar o envio (deve ser positivo)
-     * @return $this Retorna a própria instância para method chaining
+     * @return self Retorna a própria instância para method chaining
      * 
      * @example
      * ```php
@@ -113,7 +113,7 @@ class ZClient
      * @param array<Button|array> $buttons Array de objetos Button ou arrays associativos
      * @return \Illuminate\Http\Client\Response Resposta da requisição HTTP
      * 
-     * @throws \Illuminate\Http\Client\RequestException Se a requisição falhar
+     * @throws \RuntimeException Se as credenciais não foram configuradas via using()
      * 
      * @example
      * ```php
@@ -129,8 +129,15 @@ class ZClient
      * );
      * ```
      */
-    public function sendButtons(string $phone, string $text, array $buttons)
+    public function sendButtons(string $phone, string $text, array $buttons): \Illuminate\Http\Client\Response
     {
+        // Valida se as credenciais foram configuradas
+        if ($this->instance === null || $this->token === null || $this->clientToken === null) {
+            throw new \RuntimeException(
+                'Credentials not configured. Call using() method before sendButtons().'
+            );
+        }
+
         $url = "https://api.z-api.io/instances/{$this->instance}/token/{$this->token}/send-button-actions";
 
         // Converte objetos Button para arrays

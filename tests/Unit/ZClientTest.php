@@ -394,3 +394,25 @@ it('ignores zero delay values', function () {
         return !isset($request['delayMessage']);
     });
 });
+
+it('throws exception when using() is called with empty instance', function () {
+    $client = new ZClient();
+    $client->using('', 'token', 'client-token');
+})->throws(InvalidArgumentException::class, 'Instance, token and clientToken cannot be empty');
+
+it('throws exception when using() is called with empty token', function () {
+    $client = new ZClient();
+    $client->using('instance', '', 'client-token');
+})->throws(InvalidArgumentException::class, 'Instance, token and clientToken cannot be empty');
+
+it('throws exception when using() is called with empty clientToken', function () {
+    $client = new ZClient();
+    $client->using('instance', 'token', '');
+})->throws(InvalidArgumentException::class, 'Instance, token and clientToken cannot be empty');
+
+it('throws exception when sendButtons is called before using()', function () {
+    $client = new ZClient();
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+    
+    $client->sendButtons('5511999999999', 'Test', $buttons);
+})->throws(RuntimeException::class, 'Credentials not configured. Call using() method before sendButtons().');

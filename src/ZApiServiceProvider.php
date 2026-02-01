@@ -20,8 +20,8 @@ class ZApiServiceProvider extends ServiceProvider
      * Registra serviços no container do Laravel
      * 
      * Este método é chamado automaticamente durante o boot do framework.
-     * Registra o ZClient como singleton para que a mesma instância seja
-     * reutilizada durante todo o ciclo de vida da requisição.
+     * Registra o ZClient para que uma nova instância seja criada a cada resolução,
+     * evitando problemas de estado compartilhado em ambientes multi-tenant.
      * 
      * @return void
      */
@@ -30,8 +30,9 @@ class ZApiServiceProvider extends ServiceProvider
         // Une as configurações para que o sistema sempre tenha os valores default
         $this->mergeConfigFrom(__DIR__.'/../config/zapi.php', 'zapi');
 
-        // Registra o Singleton para uso via Facade ou Injeção de Dependência
-        $this->app->singleton('zapi', function ($app) {
+        // Registra como bind (não singleton) para evitar compartilhamento de estado
+        // Cada resolução cria uma nova instância, ideal para multi-tenancy
+        $this->app->bind('zapi', function ($app) {
             return new ZClient();
         });
     }

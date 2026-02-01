@@ -39,7 +39,7 @@
     "prefer-stable": true,
     "require-dev": {
         "pestphp/pest": "^4.3",
-        "orchestra/testbench": "^9.16"
+        "orchestra/testbench": "^7.0|^8.0|^9.0"
     },
     "config": {
         "allow-plugins": {
