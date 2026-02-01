@@ -6,10 +6,24 @@ use Illuminate\Support\ServiceProvider;
 use SuaEmpresa\ZApi\Console\InstallZApi;
 use SuaEmpresa\ZApi\Services\ZClient;
 
+/**
+ * Service Provider para o Z-API Laravel SDK
+ * 
+ * Este provider registra os serviços do SDK no container do Laravel,
+ * publica configurações e rotas, e registra comandos artisan.
+ * 
+ * @package SuaEmpresa\ZApi
+ */
 class ZApiServiceProvider extends ServiceProvider
 {
     /**
-     * Registra serviços no container.
+     * Registra serviços no container do Laravel
+     * 
+     * Este método é chamado automaticamente durante o boot do framework.
+     * Registra o ZClient como singleton para que a mesma instância seja
+     * reutilizada durante todo o ciclo de vida da requisição.
+     * 
+     * @return void
      */
     public function register()
     {
@@ -23,7 +37,12 @@ class ZApiServiceProvider extends ServiceProvider
     }
 
     /**
-     * Executa ações durante a inicialização (boot) do Laravel.
+     * Executa ações durante a inicialização (boot) do Laravel
+     * 
+     * Carrega rotas, publica configurações e registra comandos artisan.
+     * As publicações só são registradas quando executado via CLI.
+     * 
+     * @return void
      */
     public function boot()
     {

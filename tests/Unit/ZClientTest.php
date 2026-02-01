@@ -262,3 +262,135 @@ it('can mix Button DTOs and arrays (for migration scenarios)', function () {
     expect($response->status())->toBe(200);
 });
 
+
+it('supports method chaining with using()', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    // Act - Method chaining
+    $result = $this->client->using('chain-instance', 'chain-token', 'chain-client-token');
+
+    // Assert - Should return self for chaining
+    expect($result)->toBe($this->client);
+});
+
+it('supports method chaining with withDelay()', function () {
+    // Arrange
+    $client = new ZClient();
+
+    // Act - Method chaining
+    $result = $client->withDelay(10);
+
+    // Assert - Should return self for chaining
+    expect($result)->toBe($client);
+});
+
+it('sends message with delay when withDelay is used', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+
+    // Act
+    $this->client->withDelay(15)->sendButtons('5511999999999', 'Test message', $buttons);
+
+    // Assert
+    Http::assertSent(function ($request) {
+        return isset($request['delayMessage'])
+            && $request['delayMessage'] === 15;
+    });
+});
+
+it('does not include delay parameter when withDelay is not used', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+
+    // Act
+    $this->client->sendButtons('5511999999999', 'Test message', $buttons);
+
+    // Assert
+    Http::assertSent(function ($request) {
+        return !isset($request['delayMessage']);
+    });
+});
+
+it('supports full method chaining: using -> withDelay -> sendButtons', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true, 'messageId' => 'XYZ789'], 200)]);
+
+    $client = new ZClient();
+    $buttons = [
+        Button::url('btn-offer', 'Ver Oferta', 'https://example.com'),
+        Button::call('btn-call', 'Ligar', '551133334444')
+    ];
+
+    // Act - Full chaining
+    $response = $client
+        ->using('chained-instance', 'chained-token', 'chained-client-token')
+        ->withDelay(5)
+        ->sendButtons('5511999999999', 'Chained message', $buttons);
+
+    // Assert
+    Http::assertSent(function ($request) {
+        return $request->url() === 'https://api.z-api.io/instances/chained-instance/token/chained-token/send-button-actions'
+            && $request->hasHeader('Client-Token', 'chained-client-token')
+            && $request['delayMessage'] === 5
+            && $request['phone'] === '5511999999999'
+            && $request['message'] === 'Chained message'
+            && count($request['buttonActions']) === 2;
+    });
+
+    expect($response->status())->toBe(200)
+        ->and($response->json('messageId'))->toBe('XYZ789');
+});
+
+it('resets delay after sending message', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+
+    // Act - First message with delay
+    $this->client->withDelay(10)->sendButtons('5511999999999', 'First message', $buttons);
+
+    // Second message without calling withDelay again
+    $this->client->sendButtons('5511999999999', 'Second message', $buttons);
+
+    // Assert - Second message should not have delay
+    Http::assertSent(function ($request) {
+        return $request['message'] === 'Second message'
+            && !isset($request['delayMessage']);
+    });
+});
+
+it('ignores negative delay values', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+
+    // Act
+    $this->client->withDelay(-5)->sendButtons('5511999999999', 'Test message', $buttons);
+
+    // Assert - Should not include delay parameter
+    Http::assertSent(function ($request) {
+        return !isset($request['delayMessage']);
+    });
+});
+
+it('ignores zero delay values', function () {
+    // Arrange
+    Http::fake(['*' => Http::response(['success' => true], 200)]);
+
+    $buttons = [Button::url('btn-1', 'Test', 'https://example.com')];
+
+    // Act
+    $this->client->withDelay(0)->sendButtons('5511999999999', 'Test message', $buttons);
+
+    // Assert - Should not include delay parameter
+    Http::assertSent(function ($request) {
+        return !isset($request['delayMessage']);
+    });
+});
