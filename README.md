@@ -58,17 +58,29 @@ ZAPI_INSTANCE_TOKEN=seu_token_instancia
 
 ### 1. Remarketing com Botões (Interatividade) - Usando DTOs ✨
 
-Ideal para recuperação de carrinho, promoções e retenção. Agora com **DTOs validados**!
+Ideal para recuperação de carrinho, promoções e retenção. Agora com **DTOs validados** e **Method Chaining**!
 
 ```php
 use SuaEmpresa\ZApi\Facades\ZApi;
 use SuaEmpresa\ZApi\DTOs\Button;
 
-// Enviando para um cliente específico (Multi-tenancy) usando DTOs
+// Enviando para um cliente específico (Multi-tenancy) usando DTOs e method chaining
 ZApi::using($tenant->instance, $tenant->token, $tenant->cToken)
     ->sendButtons('5511999999999', 'Olá! Vimos que você esqueceu itens no carrinho. Temos um cupom de 10%!', [
         Button::url('cupom-10', 'Resgatar Desconto', 'https://loja.com/checkout'),
         Button::call('ajuda-vendedor', 'Falar com Atendente', '551133334444'),
+    ]);
+
+```
+
+**Com delay (agendamento):**
+
+```php
+// Envia a mensagem após 30 segundos usando method chaining
+ZApi::using($tenant->instance, $tenant->token, $tenant->cToken)
+    ->withDelay(30)
+    ->sendButtons('5511999999999', 'Mensagem agendada!', [
+        Button::url('oferta-limitada', 'Ver Oferta', 'https://loja.com/oferta-relampago'),
     ]);
 
 ```
@@ -113,6 +125,51 @@ public function handle(ZApiMessageReceived $event)
 }
 
 ```
+
+---
+
+## ⛓️ Method Chaining
+
+O SDK suporta **method chaining fluente** para uma sintaxe elegante e intuitiva:
+
+```php
+use SuaEmpresa\ZApi\Facades\ZApi;
+use SuaEmpresa\ZApi\DTOs\Button;
+
+// Encadeamento completo
+$response = ZApi::using($instance, $token, $clientToken)
+                ->withDelay(10)
+                ->sendButtons('5511999999999', 'Mensagem', [
+                    Button::url('btn-1', 'Clique aqui', 'https://example.com')
+                ]);
+
+// Todos os métodos de configuração retornam $this
+$client = ZApi::using($instance, $token, $clientToken);  // Retorna ZClient
+$client->withDelay(5);                                    // Retorna ZClient
+$response = $client->sendButtons(...);                    // Retorna Response
+```
+
+### Método `withDelay()`
+
+Agenda o envio da mensagem para depois de X segundos:
+
+```php
+// Envia após 60 segundos
+ZApi::using($instance, $token, $clientToken)
+    ->withDelay(60)
+    ->sendButtons('5511999999999', 'Mensagem agendada', [...]);
+
+// O delay é resetado após o envio
+// A próxima mensagem será enviada imediatamente
+ZApi::using($instance, $token, $clientToken)
+    ->sendButtons('5511999999999', 'Mensagem imediata', [...]);
+```
+
+**Características:**
+- ⏱️ Aceita valores em segundos (inteiro positivo)
+- 🔄 Reseta automaticamente após cada envio
+- ✅ Valores zero ou negativos são ignorados
+- 🎯 Usa o parâmetro `delayMessage` da Z-API
 
 ---
 
@@ -176,6 +233,8 @@ Este pacote inclui uma suite completa de testes usando **Pest PHP**.
 Os testes cobrem:
 - ✓ Validação do Button DTO (tipos, campos obrigatórios)
 - ✓ Factory methods (Button::url(), Button::call())
+- ✓ **Method chaining** (using(), withDelay())
+- ✓ **Delay de mensagens** (withDelay, reset automático)
 - ✓ Envio correto de JSON para Z-API com DTOs
 - ✓ Backward compatibility com arrays
 - ✓ Validação de headers (Client-Token)
@@ -184,6 +243,8 @@ Os testes cobrem:
 - ✓ Estrutura correta de botões (URL e CALL)
 - ✓ Configuração dinâmica de instância/token
 - ✓ Cenários de migração (mix de DTOs e arrays)
+
+**Total: 26 testes, 57 assertions - Todos passando! ✅**
 
 Para mais detalhes, consulte [tests/README.md](tests/README.md).
 
