@@ -76,7 +76,7 @@ class Button
         
         if (!in_array($type, $validTypes)) {
             throw new InvalidArgumentException(
-                "Invalid button type '{$type}'. Must be one of: " . implode(', ', $validTypes)
+                "Invalid button type '{$type}'"
             );
         }
     }
@@ -88,13 +88,13 @@ class Button
     {
         if ($type === 'URL' && empty($url)) {
             throw new InvalidArgumentException(
-                "Button of type 'URL' requires a 'url' parameter."
+                "Button of type 'URL' requires a 'url' parameter"
             );
         }
 
         if ($type === 'CALL' && empty($phone)) {
             throw new InvalidArgumentException(
-                "Button of type 'CALL' requires a 'phone' parameter."
+                "Button of type 'CALL' requires a 'phone' parameter"
             );
         }
     }
