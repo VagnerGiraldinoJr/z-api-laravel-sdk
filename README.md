@@ -103,6 +103,37 @@ public function handle(ZApiMessageReceived $event)
 
 ---
 
+## 🧪 Testes
+
+Este pacote inclui uma suite completa de testes usando **Pest PHP**.
+
+### Executando os Testes
+
+```bash
+# Todos os testes
+./vendor/bin/pest
+
+# Com relatório detalhado
+./vendor/bin/pest --verbose
+
+# Apenas testes unitários
+./vendor/bin/pest tests/Unit
+```
+
+### Cobertura de Testes
+
+Os testes cobrem:
+- ✓ Envio correto de JSON para Z-API
+- ✓ Validação de headers (Client-Token)
+- ✓ Tratamento de resposta de sucesso (200)
+- ✓ Tratamento de erros HTTP (404, 500)
+- ✓ Estrutura correta de botões (URL e CALL)
+- ✓ Configuração dinâmica de instância/token
+
+Para mais detalhes, consulte [tests/README.md](tests/README.md).
+
+---
+
 ## 📄 Licença
 
 Este SDK foi desenvolvido para uso interno e por parceiros. Todos os direitos reservados.
