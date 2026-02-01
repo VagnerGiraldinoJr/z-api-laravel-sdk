@@ -86,8 +86,19 @@ class ZClient
      */
     public function withDelay(int $seconds): self
     {
-        $this->delay = $seconds > 0 ? $seconds : null;
+        $this->delay = $this->validateDelay($seconds);
         return $this;
+    }
+
+    /**
+     * Valida o valor do delay
+     * 
+     * @param int $seconds Número de segundos
+     * @return int|null Retorna o valor se válido, ou null se inválido
+     */
+    protected function validateDelay(int $seconds): ?int
+    {
+        return $seconds > 0 ? $seconds : null;
     }
 
     /**
