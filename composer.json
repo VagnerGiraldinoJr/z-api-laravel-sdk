@@ -1,0 +1,21 @@
+{
+    "name": "seu-usuario-github/z-api-laravel-sdk",
+    "description": "SDK Profissional para integração Z-API no Laravel",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "SuaEmpresa\\ZApi\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SuaEmpresa\\ZApi\\ZApiServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^9.0|^10.0|^11.0"
+    }
+}
