@@ -3,8 +3,8 @@
 [![Tests](https://github.com/VagnerGiraldinoJr/z-api-laravel-sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/VagnerGiraldinoJr/z-api-laravel-sdk/actions)
 [![Latest Stable Version](https://img.shields.io/github/v/release/VagnerGiraldinoJr/z-api-laravel-sdk)](https://github.com/VagnerGiraldinoJr/z-api-laravel-sdk/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PHP Version](https://img.shields.io/badge/PHP-8.2%20|%208.3-777bb4.svg)](https://www.php.net/)
-[![Laravel Version](https://img.shields.io/badge/Laravel-10%20|%2011-ff2d20.svg)](https://laravel.com/)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777bb4.svg)](https://www.php.net/)
+[![Laravel Version](https://img.shields.io/badge/Laravel-10%20|%2011%20|%2012-ff2d20.svg)](https://laravel.com/)
 
 ---
 
